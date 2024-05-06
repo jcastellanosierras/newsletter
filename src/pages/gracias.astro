@@ -1,0 +1,40 @@
+---
+import Layout from "@/layouts/Layout.astro"
+import { subscribeEmail } from "@/utils/resend"
+import { z } from "astro:content"
+
+const url = new URL(Astro.request.url)
+
+const email = url.searchParams.get('email')
+
+console.log(email)
+
+const emailSchema = z.string().email()
+
+const validEmail = emailSchema.safeParse(email)
+
+console.log(validEmail)
+
+if (validEmail.success) {
+  await subscribeEmail(validEmail.data)
+} else {
+  return Astro.redirect('/')
+}
+---
+
+<Layout title="Página de agradecimiento por suscripción al formulario">
+  <h1>Gracias por suscrirte</h1>
+  <p>Su suscripción ha sido exitosa, ¡enhorabuena!</p>
+  <p><a href="/">Volver al inicio</a></p>
+</Layout>
+
+<style>
+  a {
+    color: #0070f3;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+</style>
